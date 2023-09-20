@@ -25,7 +25,17 @@ def hanoi(n, start, end, trans):
 
 def hanoi2(n, start, end, trans):
     # 非递归汉诺塔
-    pass
+    stack = [(n, start, end, trans)]
+    while stack:
+        cur = stack.pop()
+        if cur[0] == 1:
+            move(cur[1], cur[2])
+        else:
+            stack.append((cur[0] - 1, cur[3], cur[2], cur[1]))
+            stack.append((1, cur[1], cur[2], None))
+            stack.append((cur[0] - 1, cur[1], cur[3], cur[2]))
 
 
 hanoi(3, 'A', 'B', 'C')
+print('----------------')
+hanoi2(3, 'A', 'B', 'C')
