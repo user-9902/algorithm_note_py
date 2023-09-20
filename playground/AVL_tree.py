@@ -7,7 +7,7 @@
 
 相较于二叉排序树，二叉平衡树用更多的插入的时间，换来了读取操作时更高的效率
 """
-from typing import Optional
+from typing import Optional, List
 
 DIRECT_MAP = ('left', 'right')
 
@@ -20,11 +20,17 @@ class TreeNode:
         self.right = None
 
     def get_balance_factor(self) -> int:
+        """
+        获取当前节点平衡因子
+        """
         l = 0 if self.left is None else self.left.height
         r = 0 if self.right is None else self.right.height
         return l - r
 
     def set_height(self):
+        """
+        设置当前节点高度
+        """
         l_height = 0 if self.left is None else self.left.height
         r_height = 0 if self.right is None else self.right.height
         self.height = max(l_height, r_height) + 1
@@ -34,6 +40,9 @@ class TreeNode:
 
 
 def r_rotate(node: TreeNode):
+    """
+    右旋方法
+    """
     # 守卫
     defend1 = node.left
     defend2 = node.left.right
@@ -50,6 +59,9 @@ def r_rotate(node: TreeNode):
 
 
 def l_rotate(node: TreeNode):
+    """
+    左旋方法
+    """
     # 守卫
     defend1 = node.right
     defend2 = node.right.left
@@ -65,11 +77,61 @@ def l_rotate(node: TreeNode):
     return defend1
 
 
+def rotate_unit(node: TreeNode) -> TreeNode:
+    """
+    通用旋转方法
+    """
+    # 重置高度
+    node.set_height()
+    # 获取平很因子
+    direct_parent = node.get_balance_factor()
+    # 无需旋转
+    if abs(direct_parent) < 2:
+        return node
+
+    direct_child = node.left.get_balance_factor() \
+        if direct_parent > 0 else node.right.get_balance_factor()
+    # 4 cases
+    if direct_parent > 0:
+        # ll型
+        if direct_child >= 0:
+            node = r_rotate(node)
+        # lr型
+        else:
+            node.left = l_rotate(node.left)
+            node = r_rotate(node)
+    else:
+        # rr型
+        if direct_child <= 0:
+            node = l_rotate(node)
+        # rl型
+        else:
+            node.right = r_rotate(node.right)
+            node = l_rotate(node)
+
+    return node
+
+
+def rotate_by_path(path: List[TreeNode]) -> TreeNode:
+    n = len(path)
+
+    for i in range(n-1, -1, -1):
+        node = rotate_unit(path[i])
+        if i == 0:
+            return node
+        else:
+            if path[i - 1].left == path[i]:
+                path[i-1].left = node
+            else:
+                path[i-1].right = node
+    return node
+
+
 class AVLTree:
     def __init__(self, val: Optional[int]):
         self.root = None if val is None else TreeNode(val)
 
-    def search_node(self, val: int):
+    def search_node(self, val: int) -> bool:
         def dfs(node):
             if node is None:
                 return False
@@ -82,7 +144,7 @@ class AVLTree:
 
         return dfs(self.root)
 
-    def insert_node(self, val: int):
+    def insert_node(self, val: int) -> bool:
         # 插入存在的值
         if self.search_node(val):
             return False
@@ -92,70 +154,30 @@ class AVLTree:
             return True
 
         path = []   # 路径
-        direct = []  # 方向
-        change_height = False  # 高度是否发生变化
 
         def dfs(node, val):
-            nonlocal change_height
             path.append(node)
 
             if val < node.val:
-                direct.append(0)
                 if node.left is None:
                     node.left = TreeNode(val)
-                    if node.right is None:
-                        change_height = True
                 else:
                     dfs(node.left, val)
             else:
-                direct.append(1)
                 if node.right is None:
                     node.right = TreeNode(val)
-                    if node.left is None:
-                        change_height = True
                 else:
                     dfs(node.right, val)
         # 插入节点
         dfs(self.root, val)
 
-        # 高度发生变化的时候，可能需要旋转
-        if change_height:
-            # 维护高度
-            for i in path:
-                i.height += 1
-
-            n = len(path)
-            for i in range(n-1, -1, -1):
-                n = path[i]
-                equal_factor = n.get_balance_factor()
-
-                # 需要旋转
-                if abs(equal_factor) > 1:
-                    # four cases
-                    if direct[i] == 1 and direct[i+1] == 1:
-                        r = l_rotate(n)
-                    if direct[i] == 0 and direct[i+1] == 0:
-                        r = r_rotate(n)
-                    if direct[i] == 0 and direct[i+1] == 1:
-                        n.left = l_rotate(path[i+1])
-                        r = r_rotate(n)
-                    if direct[i] == 1 and direct[i+1] == 0:
-                        n.right = r_rotate(path[i+1])
-                        r = l_rotate(n)
-                    # 旋转后的节点挂到父节点上
-                    if i == 0:
-                        self.root = r
-                    else:
-                        if direct[i - 1] == 0:
-                            path[i-1].left = r
-                        else:
-                            path[i-1].right = r
+        # 沿着路径调整平衡
+        self.root = rotate_by_path(path)
 
         return True
 
-    def delete_node(self, val: int):
+    def delete_node(self, val: int, _node=None) -> bool:
         path = []
-        direct = []
 
         def dfs(node, val):
             if node is None:
@@ -163,26 +185,64 @@ class AVLTree:
             if node.val == val:
                 return node
             elif val < node.val:
-                direct.append(0)
                 path.append(node)
                 return dfs(node.left, val)
             else:
-                direct.append(1)
                 path.append(node)
                 return dfs(node.right, val)
 
-        node = dfs(self.root, val)
+        node = dfs(_node or self.root, val)
+
         # 不存在需删除的节点
         if node is None:
             return False
 
-        for i in path:
-            print(i)
-        for i in direct:
-            print(i)
+        parent = path[-1] if path else None
+        n = len(path)
 
+        # 删除节点无child
         if node.left is None and node.right is None:
-            return
+            if n == 0:
+                self.root = None
+                return True
+            # 删除节点
+            if parent.left == node:
+                parent.left = None
+            else:
+                parent.right = None
+            # 沿着路径调整平衡
+            root = rotate_by_path(path)
+            if _node is None:
+                self.root = root
+
+        # 删除节点有两个child
+        elif node.left and node.right:
+            # 用后继节点代替当前节点，
+            # 后继节点最多只有一个右子节点，删除时可以递归调用dele_node
+            successor_node = node.right
+            while successor_node.left:
+                successor_node = successor_node.left
+
+            self.delete_node(successor_node.val, node)
+            node.val = successor_node.val
+
+        # 删除节点有一个child
+        else:
+            if n == 0:
+                self.root = node.left or node.right
+                return True
+            # 用child代替删除节点
+            if parent.left == node:
+                parent.left = node.left or node.right
+            else:
+                parent.right = node.left or node.right
+            node.left = node.right = None
+            # 沿着路径调整平衡
+            root = rotate_by_path(path)
+            if _node is None:
+                self.root = root
+
+        return True
 
     def print_tree(self):
         def p(node, level=0):
@@ -192,6 +252,7 @@ class AVLTree:
                 p(node.left, level + 1)
 
         p(self.root)
+        print('------------------------------')
 
 
 tree = AVLTree(2)
@@ -199,8 +260,6 @@ tree.insert_node(1)
 tree.insert_node(0)
 tree.insert_node(3)
 tree.insert_node(4)
+tree.insert_node(5)
+tree.delete_node(3)
 tree.print_tree()
-tree.delete_node(4)
-
-a = '123'
-a += '123'
