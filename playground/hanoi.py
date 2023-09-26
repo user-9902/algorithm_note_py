@@ -1,6 +1,7 @@
 """
 汉诺塔
-简单的递归实现 如 要整体从a->c 就需要将n-1先移动至b ... 直至n==1
+对比递归和非递归的汉诺塔，发现还是很有趣的
+函数调用为什么是栈结构，在这里可见一斑
 """
 
 STEP = ('A', 'B', 'C')
@@ -31,6 +32,8 @@ def hanoi2(n, start, end, trans):
         if cur[0] == 1:
             move(cur[1], cur[2])
         else:
+            # 这里的顺序和递归调用是相反的，因为我们在下一轮while中才会执行栈中的内容
+            # 而函数调用是直接压入栈中，立即执行
             stack.append((cur[0] - 1, cur[3], cur[2], cur[1]))
             stack.append((1, cur[1], cur[2], None))
             stack.append((cur[0] - 1, cur[1], cur[3], cur[2]))

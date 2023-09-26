@@ -6,6 +6,8 @@
 这使得我们在插入数据时候需要注意满足AVLtree的定义
 
 相较于二叉排序树，二叉平衡树用更多的插入的时间，换来了读取操作时更高的效率
+
+参考：https://www.bilibili.com/video/BV15a411D7tr/?spm_id_from=333.788&vd_source=51614d2a49bfb1ec0bdf64b53b2dacd5
 """
 from typing import Optional, List
 
@@ -253,6 +255,29 @@ class AVLTree:
 
         p(self.root)
         print('------------------------------')
+
+    @staticmethod
+    def is_avltree(tree) -> bool:
+        root = tree.root if tree.root else tree
+
+        # 后续遍历，检查每个节点的平衡因子
+        def dfs(node):
+            l = 0
+            r = 0
+            if node.left is not None:
+                l = dfs(node.left)
+            if node.right is not None:
+                r = dfs(node.right)
+            if abs(l - r) > 1:
+                raise Exception()
+            return max(l, r) + 1
+
+        try:
+            dfs(root)
+        except:
+            return False
+        else:
+            return True
 
 
 tree = AVLTree(2)

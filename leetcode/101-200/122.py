@@ -3,12 +3,34 @@
 dp; greedy
 """
 from typing import List
+from functools import cache
+from math import inf
 
 
 class Solution:
+    def maxProfit3(self, prices: List[int]) -> int:
+        """
+        递归
+        """
+        n = len(prices)
+
+        @cache
+        def dfs(i, hold):
+            # 边界值
+            if i == 0:
+                return -inf if hold else 0
+            if hold:
+                # 持有
+                return max(dfs(i-1, False) - prices[i], dfs(i-1, True))
+            else:
+                # 不持有
+                return max(dfs(i-1, True) + prices[i], dfs(i-1, False))
+
+        return dfs(n-1, False)
+
     def maxProfit(self, prices: List[int]) -> int:
         """
-        dp
+        dp 递推
         每天有两种状态，手里有股票或手里没股票
         0 表示手中没有股票 1 表示手中有股票
         dp[i][0] = max(dp[i - 1][0], dp[i - 1][1] + prices[i])
@@ -40,3 +62,6 @@ class Solution:
             if prices[i] - prices[i - 1] > 0:
                 res += prices[i] - prices[i - 1]
         return res
+
+
+Solution().maxProfit3([7, 1, 5, 3, 6, 4])
