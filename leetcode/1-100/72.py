@@ -24,13 +24,34 @@ class Solution:
         for x in range(1, len_1+1):
             for y in range(1, len_2+1):
                 # 当前位置的字符相同，则无需操作，最小操作不步速即为dp[i - 1][j - 1]
-                if  word1[x - 1] == word2[y - 1]: 
-                    dp[x][y] = dp[x -1 ][y-1]
+                if word1[x - 1] == word2[y - 1]:
+                    dp[x][y] = dp[x - 1][y-1]
                 else:
                     # 否则最小步长为 dp[i-1][j]：word1 添加一个元素 dp[i][j-1] word2 添加一个元素 或者替换实现
                     dp[x][y] = min(dp[x][y-1], dp[x-1][y], dp[x-1][y-1]) + 1
         return dp[len_1][len_2]
 
+    def minDistance2(self, word1: str, word2: str) -> int:
+        """
+        dp
+        压缩至一维
+        """
+        n = len(word1)
+        m = len(word2)
+
+        f = list(range(m+1))
+
+        for i in range(1, n+1):
+            pre = f[0]
+            f[0] = i
+            for j in range(1, m+1):
+                tmp = f[j]
+                if word1[i-1] == word2[j-1]:
+                    f[j] = pre
+                else:
+                    f[j] = min(f[j-1], f[j], pre) + 1
+                pre = tmp
+        return f[-1]
 
 
-Solution().minDistance('intention', 'execution')
+Solution().minDistance('horse', 'ros')

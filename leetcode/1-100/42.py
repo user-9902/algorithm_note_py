@@ -1,5 +1,6 @@
 """
 42. 接雨水
+每个块能装的雨水由最大前缀和最大后缀中的小者决定
 """
 from typing import List
 
@@ -7,8 +8,8 @@ from typing import List
 class Solution:
     def trap(self, height: List[int]) -> int:
         """
-        按列求解
-        算出左右最大
+        dp
+        算出最大前后缀然后，然后计算每个块能装的雨水
         cur = min(max_left, max_right) - cur_height
         左右边界的实现实例和列求解一样，只要存储左边界即可，求有边界的时候同时求解即可。
         """
@@ -31,8 +32,12 @@ class Solution:
     def trap2(self, height: List[int]) -> int:
         """
         双指针
-        正序最大前缀和后续最大后缀，始终是递增的
+        初始化前后缀
         相向指针，找寻min(pre_max, post_max)
+        如: left = 1 时 right = 7 时的pre_max = 2 post_max = 4
+            left的最大前缀为2 最大后缀>=4
+            right的最大后缀为4 最大前缀>=2
+            此时left下标能接多少雨水已经确定了
         """
         pre_max = 0
         post_max = 0

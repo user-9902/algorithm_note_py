@@ -104,7 +104,7 @@ def exp_checker(str: str) -> bool:
     stack = []
     for s in list(str):
         # 检查字符是否合法
-        if s not in LEGAL_CHAR:
+        if s not in DIGITS + DIGITS:
             return False
         # 检查括号是否匹配
         if s == '(' or s == ')':

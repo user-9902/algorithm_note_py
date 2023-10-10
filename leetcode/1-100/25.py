@@ -15,43 +15,40 @@ class ListNode:
 
 
 class Solution:
-
     def reverseKGroup(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
-        # special case
-        if k == 1 or head is None or head.next is None:
-            return head
-        # 记录需要反转节点的起止位置
-        start = head
-        end = head
-        res = None  # 首次反转完的头节点
-        pre_end = None  # 前一轮反转的尾节点
+        ans = None
 
-        while end:
-            counter = 0  # 记录遍历次数，达到k次需要反转
-            while end and counter != k:
-                end = end.next
-                counter += 1
-            if counter == k:
-                # 这里开始反转链表,反转的过程可以参考下面注释掉的 reverseLinkList 方法
-                pre = start
-                cur = pre.next
-                while counter - 1 > 0:
-                    tmp = cur.next
-                    cur.next = pre
-                    pre = cur
-                    cur = tmp
-                    counter -= 1
-                # 记录首次反转完的头节点
-                res = res or pre
-                # 处理上一轮反转的尾节点
-                if pre_end:
-                    pre_end.next = pre
-                pre_end = start
-                # 移动start
-                start = end
-        if pre_end:
-            pre_end.next = start
-        return res or head
+        cur = head  # 遍历
+        start = cur  # 反转起始点
+        cnt = 0  # 计数
+
+        pre_s = None  # 前一轮反转，反转后的尾巴
+        while cur:
+            cnt += 1
+            cur = cur.next
+            # 开始反转
+            if cnt == k:
+                cnt = 0
+
+                s = start
+                pre = None
+                for _ in range(k):
+                    nxt = start.next
+                    start.next = pre
+                    pre = start
+                    start = nxt
+                # 前一轮反转后的尾巴，指向本轮反转后的头
+                if pre_s:
+                    pre_s.next = pre
+                pre_s = s
+                # 是否发生反转影响结果
+                if ans is None:
+                    ans = pre
+        # 存在剩余未反转部分
+        if cnt > 0 and pre_s:
+            pre_s.next = start
+
+        return ans or head
 
     # def reverseLinkList(self, head: Optional[ListNode]) -> Optional[ListNode]:
     #     """

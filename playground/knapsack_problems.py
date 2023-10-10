@@ -42,7 +42,6 @@ def zero_one_knapsack(w: List[int], v: List[int], cap: int):
     当前物品可选可不选，
         不选时则为 dp[i-1][j]，
         选择时则为 j-w[i]时的最大价值 + 当前价值
-    空间复杂度n*cap
     """
     # n = len(w)
     # f = [[0] * (cap + 1) for _ in range(n+1)]
@@ -78,6 +77,12 @@ def zero_one_knapsack(w: List[int], v: List[int], cap: int):
     继续观察状态转移方程
     dp[i][j] 中的 j 依赖的是 >=j 的状态
     因此压缩至一维，从后向前遍历即可
+    分析二维f, 当前b始终依赖 a 和 a之前的状态
+    [...a...]
+    [...b...]
+    因此需要从后向前遍历,这样一维数组的组成如下
+    [...a
+        b...]
     """
     n = len(w)
     f = [0] * (cap + 1)
@@ -117,6 +122,12 @@ def complete_knapstack(w: List[int], v: List[int], cap: int):
     """
     dp
     同样01背包一样可以压缩为一维
+    分析二维f: 当前的b依赖于a或a及a之后的状态
+    [...a...]
+    [...b...]
+    因此需要从前向后遍历，一维数组组成如下
+        a...]
+    [...b
     """
     n = len(w)
     f = [0] * (cap + 1)

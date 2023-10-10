@@ -1,5 +1,9 @@
+"""
+3. 无重复字符的最长子串
+滑动窗口
+"""
+
 class Solution:
-    # 快慢指针
     def lengthOfLongestSubstring(self, s: str) -> int:
         i = -1  # 慢指针 从-1开始满足长度为1的字符串
         res = 0
