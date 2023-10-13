@@ -1,6 +1,7 @@
 """
 1143. 最长公共子序列
-区间dp
+LCS, dp
+最长公共子序列的变形题有很多，是非常经典的区间dp题目
 """
 
 
@@ -14,13 +15,11 @@ class Solution:
         n = len(text1)
         m = len(text2)
 
-        f = [[0] * m for _ in range(n)]
+        f = [[0] * (m+1) for _ in range(n+1)]
 
-        for i, x in enumerate(n):
-            for j, y in enumerate(m):
-                f[i+1][j+1] = f[i][j] + \
-                    1 if x == y else max(f[i][j+1], f[i+1][j])
-
+        for i in range(n):
+            for j in range(m):
+                f[i+1][j+1] = f[i][j] + 1 if text1[i] == text2[j] else max(f[i+1][j], f[i][j+1])
         return f[-1][-1]
 
     def longestCommonSubsequence2(self, text1: str, text2: str) -> int:
@@ -34,14 +33,16 @@ class Solution:
 
         n = len(text1)
         m = len(text2)
-        f = [0] * (m+1)
 
-        for i in range(n):
+        f = [0] * (m + 1)
+
+        for i, x in enumerate(text1):
             pre = 0
-            for j in range(m):
+            for j, y in enumerate(text2):
                 tmp = f[j+1]
-                f[j+1] = pre + 1 if text1[i] == text2[j] else max(f[j+1], pre)
+                f[j+1] = pre + 1 if x == y else max(f[j+1], f[j])
                 pre = tmp
+
         return f[-1]
 
 
