@@ -1,24 +1,25 @@
 """
 12. 整数转罗马数字
-string
+difficulty: 简单
+importance: 3/5
+tags:       数组
 """
 
+
 NUMS = (1, 4, 5, 9, 10, 40, 50, 90, 100, 400, 500, 900, 1000)
-ROMAN_NUMS = ('I', 'IV', 'V', 'IX', 'X', 'XL',
-              'L', 'XC', 'C', 'CD', 'D', 'CM', 'M')
+ROMANS = ("I", "IV", "V", "IX", "X", "XL",
+          "L", "XC", "C", "CD", "D", "CM", "M")
 
 
 class Solution:
     def intToRoman(self, num: int) -> str:
-        ans = []
-
-        index = len(NUMS) - 1
+        n = len(NUMS)
+        r = n - 1
+        ans = ""
         while num:
-            for i in range(index, -1, -1):
-                if num >= NUMS[i]:
-                    index = i
-                    ans.append(ROMAN_NUMS[i])
-                    num -= NUMS[i]
-                    break
-
-        return ''.join(ans)
+            if num // NUMS[r] == 0:
+                r -= 1
+            else:
+                ans += (num // NUMS[r]) * ROMANS[r]
+                num = num % NUMS[r]
+        return ans
