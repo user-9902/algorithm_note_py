@@ -33,5 +33,30 @@ class Solution:
 
         return ans if ans <= n else 0
 
+    def minSubArrayLen(self, target: int, nums: List[int]) -> int:
+        """
+        前缀和 + binary search
+        """
+        n = len(nums)
+        for i in range(1, n):
+            nums[i] = nums[i-1] + nums[i]
+        ans = inf
+        for i in range(n):
+            if nums[i] < target:
+                continue
+
+            l = 0
+            r = i
+            while l <= r:
+                mid = (l + r) // 2
+                if nums[i] - nums[mid] < target:
+                    r = mid - 1
+                else:
+                    l = mid + 1
+
+            ans = min(ans, i - l)
+
+        return ans if ans <= n else 0
+
 
 Solution().minSubArrayLen(7, [2, 3, 1, 2, 4, 3])
