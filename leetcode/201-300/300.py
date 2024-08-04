@@ -1,43 +1,56 @@
 """
-300. 最长递增子序列
-dp; greedy
+@title:      300. 最长递增子序列
+@difficulty: 中等
+@importance: 5/5
+@tags:       dp greedy
 """
 
 
 class Solution:
+    """
+    经典题：https://leetcode.cn/problems/longest-increasing-subsequence/solutions/147667/zui-chang-shang-sheng-zi-xu-lie-by-leetcode-soluti/
+    """
+
     def lengthOfLIS(self, nums: list[int]) -> int:
         """
-        dp
-        dp[i] = max(dp[j] + 1, dp[i]) ; j <= 0
+        @tags:              dp
+        @time complexity:   O(n^2)
+        @space complexity:  O(n)
+        @description:       dp[i] = max(dp[j] + 1, dp[i]) ; j <= 0
         """
         n = len(nums)
-        dp = [1] * n
-
+        f = [1] * n
         for i in range(n):
-            for j in range(i - 1, -1, -1):
-                if nums[j] < nums[i]:
-                    dp[i] = max(dp[i], dp[j] + 1)
-
-        return max(dp)
+            for j in range(i):
+                if nums[i] > nums[j]:
+                    f[i] = max(f[i], f[j] + 1)
+        return max(f)
 
     def lengthOfLIS2(self, nums: list[int]) -> int:
         """
-        贪心+二分
+        @tags:              greedy binary_search
+        @time complexity:   O(nlogn)
+        @space complexity:  O(n)
         """
-        res = [nums[0]]
-        for v in nums:
-            if v > res[-1]:
-                res.append(v)
+        n = len(nums)
+        res = [0] * n
+        idx = 0
+        res[0] = nums[0]
+        for i in range(1, n):
+            if nums[i] > res[idx]:
+                idx += 1
+                res[idx] = nums[i]
             else:
-                # 二分寻找插入位置
-                l, r = 0, len(res) - 1
-                loc = r
-                while l <= r:
-                    mid = (l + r) >> 1
-                    if res[mid] >= v:
-                        loc = mid
-                        r = mid - 1
-                    else:
+                l = 0
+                r = idx + 1
+                while l < r:
+                    mid = (l + r) // 2
+                    if res[mid] < nums[i]:
                         l = mid + 1
-                res[loc] = v
-        return len(res)
+                    else:
+                        r = mid
+                res[r] = nums[i]
+        return idx + 1
+
+
+Solution().lengthOfLIS([10, 9, 2, 5, 3, 7, 101, 18])

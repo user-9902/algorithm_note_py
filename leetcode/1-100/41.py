@@ -1,10 +1,8 @@
 """
-41. 缺失的第一个正数
-题目要求O(n)的时间复杂度
-需要明确的一点是，结果一定的在[1, len(nums) + 1]中
-ps：两种解法均参考leetcode官方
-    理顺数组的方式还算能想到
-    标记的方法实在是巧妙
+name:       41. 缺失的第一个正数
+difficulty: 中等
+importance: 4/5
+tags:       array
 """
 from typing import List
 
@@ -12,39 +10,65 @@ from typing import List
 class Solution:
     def firstMissingPositive(self, nums: List[int]) -> int:
         """
-        哈希表
-        为出现过的数字打上标记，这里的标记即是符号。
-        既然标记是负号，这里就需要将 <= 0 的值转正，这里转为 nums_len + 1 就不会对结果产生干扰了
-        数组中出现过的正数，将对应下标的数打上标记（-不会对后续的遍历产生影响，取绝对值即可），当然不能越界
-        标记完后，遍历数组，第一正数（既没被打上标记的数）就是结果
+        @tags:              hashmap
+        @time complexity:   O(n)
+        @space complexity:  O(n)
+        @description:       ❌ 结果一定出现在 1 至 n+1 中，我们创建一个n+1长度的数组来记录nums中的数字是否出现，出现过的数字打上标记。这里未满足题意的常数空间复杂度，但是是一个正确解的降级实现，便于理清思路。
         """
-        nums_len = len(nums)
+        n = len(nums)
+        # 用来记录 0 - n+1 之间的数字是否出现
+        arr = [0] * (n + 1)
+        for i in nums:
+            if 0 < i < n + 1:
+                # 出现的打上标记 1
+                arr[i - 1] = 1
+        # 查看那个数字未出现
+        for i in range(n):
+            if arr[i] == 0:
+                return i + 1
+        return n + 1
 
-        for i in range(nums_len):
+    def firstMissingPositive(self, nums: List[int]) -> int:
+        """
+        @tags:              hashmap
+        @time complexity:   O(n)
+        @space complexity:  O(1)
+        @description:       上个解创造了一个额外数组来进行记录，通过0和1来标记数字是否出现，这里我们不使用额外空间，在原数组上用正负号来表示数字是否出现。注意标记前先去除nums中负数，nums中负数不会影响结果，但会影响标记过程。
+        """
+        n = len(nums)
+
+        # 去除对标记阶段有影响的值：负数和0（0可去除可不去除）
+        for i in range(n):
             if nums[i] <= 0:
-                nums[i] = nums_len + 1
+                nums[i] = n + 1
 
-        for i in range(nums_len):
+        # 标记数字是否出现
+        for i in range(n):
             num = abs(nums[i])
-            if num <= nums_len:
+            if num < n + 1:
                 nums[num - 1] = -abs(nums[num - 1])
 
-        for i in range(nums_len):
+        # 获取结果
+        for i in range(n):
             if nums[i] > 0:
                 return i + 1
+        return n + 1
 
-        return nums_len + 1
-
-    def firstMissingPositive2(self, nums: List[int]) -> int:
+    def firstMissingPositive(self, nums: List[int]) -> int:
         """
-        将nums理顺
-        遍历nums，通过置换的方式来理顺nums
+        @tags:              swap
+        @time complexity:   O(n)
+        @space complexity:  O(1)
+        @description:       nums中的数字是乱序的，我们整理下即可，将元素置换至正确的位置
         """
         n = len(nums)
         for i in range(n):
-            while 0 < nums[i] < n + 1 and nums[nums[i] - 1] != nums[i]:
-                nums[i], nums[nums[i] - 1] = nums[nums[i] - 1], nums[i]
-
+            # 将元素交换至正确位置 交换的两个元素值相同会死循环
+            while 1 <= nums[i] <= n and nums[nums[i] - 1] != nums[i]:
+                a = nums[i] - 1
+                b = i
+                nums[a], nums[b] = nums[b], nums[a]
+        # 查找缺失的元素
         for i in range(n):
             if nums[i] != i + 1:
                 return i + 1

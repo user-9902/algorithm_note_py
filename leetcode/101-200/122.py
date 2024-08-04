@@ -1,67 +1,42 @@
 """
-122. 买卖股票的最佳时机 II
-dp; greedy
+@title:      122. 买卖股票的最佳时机 II
+@difficulty: 中等
+@importance: 4/5
+@tags:       dp, greedy
 """
 from typing import List
-from functools import cache
-from math import inf
 
 
 class Solution:
-    def maxProfit3(self, prices: List[int]) -> int:
+    def maxProfit(self, prices: List[int]) -> int:
         """
-        递归
+        @tags:              dp
+        @time complexity:   O(n)
+        @space complexity:  O(n)    f[i] 状态只与 f[i-1] 有关 可以压缩至一维
+        @description:       每天可以持有或不持有
         """
         n = len(prices)
+        f1 = [0] * n  # 手上没有股票
+        f2 = [0] * n  # 手上有股票
+        f2[0] = -prices[0]
 
-        @cache
-        def dfs(i, hold):
-            # 边界值
-            if i == 0:
-                return -inf if hold else 0
-            if hold:
-                # 持有
-                return max(dfs(i-1, False) - prices[i], dfs(i-1, True))
-            else:
-                # 不持有
-                return max(dfs(i-1, True) + prices[i], dfs(i-1, False))
-
-        return dfs(n-1, False)
+        for i in range(1, n):
+            # 继续不持有 卖掉持有的
+            f1[i] = max(f1[i - 1], f2[i - 1] + prices[i])
+            # 继续持有  买入
+            f2[i] = max(f2[i - 1], f1[i - 1] - prices[i])
+        return f1[n - 1]
 
     def maxProfit(self, prices: List[int]) -> int:
         """
-        dp 递推
-        每天有两种状态，手里有股票或手里没股票
-        0 表示手中没有股票 1 表示手中有股票
-        dp[i][0] = max(dp[i - 1][0], dp[i - 1][1] + prices[i])
-        dp[i][1] = max(dp[i - 1][1], dp[i - 1][0] - prices[i])
-        dp[i][0] 第i天手上没股票时最大值，继续不持有，或者前一天卖出的
-        dp[i][1] 第i天手上有股票时最大值，继续持有的，或者前一天买入的
+        @tags:              greedy
+        @time complexity:   O(n)
+        @space complexity:  O(1)
+        @description:       不限买卖次数，天数，收割正利润即可
         """
         n = len(prices)
-        dp = [[0, 0] for _ in range(n)]
-
-        dp[0][0] = 0
-        dp[0][1] = -prices[0]
-        for i in range(1, n):
-            dp[i][0] = max(dp[i - 1][0], dp[i - 1][1] + prices[i])
-            dp[i][1] = max(dp[i - 1][1], dp[i - 1][0] - prices[i])
-        return dp[-1][0]
-
-    def maxProfit2(self, prices: List[int]) -> int:
-        """
-        greedy
-        收割正利润
-        最大利润，即收集每天的正利润
-            若连续多天正利润，如 a a+1 a+2天间连续正利润，则a买入a-2卖出
-            若非连续正利润，如 a a+1天之间出现出现正利润，则a买入 a+1卖出
-        局部最优解和全局最优解是不冲突的
-        """
         res = 0
-        for i in range(1, len(prices)):
-            if prices[i] - prices[i - 1] > 0:
-                res += prices[i] - prices[i - 1]
+        for i in range(1, n):
+            if prices[i] - prices[i-1] > 0:
+                res += prices[i] - prices[i-1]
         return res
-
-
-Solution().maxProfit3([7, 1, 5, 3, 6, 4])

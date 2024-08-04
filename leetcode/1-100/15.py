@@ -1,48 +1,40 @@
 """
 15. 三数之和
-三数之和，等价于两数之和问题（两数的和为0转为动态的值）
-将数组转为有序，双指针
-去重
+difficulty: 中等
+importance: 5/5
+tags:       双指针
 """
 from typing import List
 
 
 class Solution:
     def threeSum(self, nums: List[int]) -> List[List[int]]:
-        nums.sort()
         n = len(nums)
-        ans = []
+        nums.sort()
 
-        for i in range(0, n-2):
+        ans = []
+        for i in range(n - 2):
             # 去重
             if i > 0 and nums[i] == nums[i - 1]:
                 continue
-            # 极值优化
-            if nums[i] + nums[i+1] + nums[i+2] > 0:
-                break
-            if nums[i] + nums[-1] + nums[-2] < 0:
-                continue
-
+            target = -nums[i]
             l = i + 1
             r = n - 1
-
             while l < r:
-                s = nums[l] + nums[r] + nums[i]
-                # 移动双指针
-                if s < 0:
-                    l += 1
-                elif s > 0:
+                if nums[l] + nums[r] > target:
                     r -= 1
+                elif nums[l] + nums[r] < target:
+                    l += 1
                 else:
                     ans.append([nums[i], nums[l], nums[r]])
+                    r -= 1
                     l += 1
                     # 去重
-                    while nums[l] == nums[l-1]:
+                    while l < r and nums[l] == nums[l - 1]:
                         l += 1
-                    r -= 1
-                    # 去重
-                    while nums[r] == nums[r+1]:
+                    while l < r and nums[r] == nums[r + 1]:
                         r -= 1
+
         return ans
 
 
