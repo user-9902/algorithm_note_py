@@ -1,7 +1,8 @@
 """
-36. 有效的数独
-设计题目
-如何高效的查重
+@title:      36. 有效的数独
+@difficulty: 中等
+@importance: 3/5
+@tags:       状态压缩
 """
 
 from typing import List
@@ -10,78 +11,24 @@ from typing import List
 class Solution:
     def isValidSudoku(self, board: List[List[str]]) -> bool:
         """
-        bf
+        @tags:              二进制状态压缩
+        @time complexity:   O(n) 空格数量
+        @space complexity:  O(n*n)
+        @description:       二进制压缩状态校验同行 同列 同3*3矩阵 是否重复  leetcode 37前置题
         """
-        def is_legal(i, j, s):
-            for x in range(9):
-                if x == j:
-                    continue
-                if board[i][x] == s:
-                    return False
+        u = (1 << 9) - 1
+        col = [u] * 9
+        row = [u] * 9
+        mat = [u] * 9
 
-            for x in range(9):
-                if x == i:
-                    continue
-                if board[x][j] == s:
-                    return False
-
-            a = i // 3
-            b = j // 3
-            for x in range(a*3, a*3+3):
-                for y in range(b*3, b*3+3):
-                    if x == i and y == j:
-                        continue
-                    if board[x][y] == s:
+        for i in range(9):
+            for j in range(9):
+                if board[i][j] != ".":
+                    b = 1 << (int(board[i][j]) - 1)
+                    idx = (i // 3) * 3 + (j // 3)
+                    if col[j] & b == 0 or row[i] & b == 0 or mat[idx] & b == 0:
                         return False
-
-            return True
-
-        for i in range(9):
-            for j in range(9):
-                if board[i][j] == '.':
-                    continue
-                if not is_legal(i, j, board[i][j]):
-                    return False
+                    col[j] ^= b
+                    row[i] ^= b
+                    mat[idx] ^= b
         return True
-
-    def isValidSudoku(self, board: List[List[str]]) -> bool:
-        """
-        hash map + 位运算
-        这里将位运算作为map以减少内存开销
-        map 为 2^1 + 2^2 + 2^3 ... + 2^9 = 1023
-        """
-        # 0：行 1：列 2：方块
-        board_map = [[1023] * 9 for _ in range(3)]
-
-        for i in range(9):
-            for j in range(9):
-                s = board[i][j]
-                if s == '.':
-                    continue
-                n = int(s)
-
-                if (board_map[0][j] >> n) % 2 == 1:
-                    board_map[0][j] ^= 2 ** n
-                else:
-                    return False
-
-                if (board_map[1][i] >> n) % 2 == 1:
-                    board_map[1][i] ^= 2 ** n
-                else:
-                    return False
-
-                if (board_map[2][(i // 3 * 3) + j // 3] >> n) % 2 == 1:
-                    board_map[2][(i // 3 * 3) + j // 3] ^= 2 ** n
-                else:
-                    return False
-
-        return True
-
-
-res = Solution().isValidSudoku(
-    [["5", "3", ".", ".", "7", ".", ".", ".", "."], ["6", ".", ".", "1", "9", "5", ".", ".", "."], [".", "9", "8", ".", ".", ".", ".", "6", "."], ["8", ".", ".", ".", "6", ".", ".", ".", "3"], ["4", ".", ".", "8", ".",
-                                                                                                                                                                                                  "3", ".", ".", "1"], ["7", ".", ".", ".", "2", ".", ".", ".", "6"], [".", "6", ".", ".", ".", ".", "2", "8", "."], [".", ".", ".", "4", "1", "9", ".", ".", "5"], [".", ".", ".", ".", "8", ".", ".", "7", "9"]]
-)
-print(res)
-
-str

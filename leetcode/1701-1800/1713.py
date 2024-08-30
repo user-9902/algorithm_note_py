@@ -15,8 +15,8 @@ class Solution:
         @tags:              LCS LIS
         @time complexity:   O(n + mlogm)
         @space complexity:  O(n + m)
-        @description:       一眼是LCS的题，但是复杂度会超。
-                            本题的所有难点就是在 💲LCS LIS的联系
+        @description:       一眼是LCS的题，但是O(n^2)复杂度会超。
+                            本题是困难题的关键:💲LCS LIS的联系
                             target: 6,4,8,1,3,2      题意target不重复是这里转化能实现的前提
                                     0,1,2,3,4,5
 

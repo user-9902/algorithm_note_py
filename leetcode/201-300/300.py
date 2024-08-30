@@ -1,8 +1,8 @@
 """
 @title:      300. 最长递增子序列
 @difficulty: 中等
-@importance: 5/5
-@tags:       dp greedy
+@importance: 6/5
+@tags:       dp greedy LIS
 """
 
 

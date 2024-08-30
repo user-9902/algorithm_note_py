@@ -1,37 +1,42 @@
 """
-17. 电话号码的字母组合
-string 回溯
-每轮维护一个数组的内存开销太大了，这里用回溯实现。
+@title:      17. 电话号码的字母组合
+@difficulty: 简单
+@importance: 4/5
+@tags:       回溯
 """
 
 from typing import List
 
+NUM_MAP = (None, None, "abc", "def", "ghi",
+           "jkl", "mno", "pqrs", "tuv", "wxyz")
+
 
 class Solution:
     def letterCombinations(self, digits: str) -> List[str]:
-        NUM_MAP = (None, None, ['a', 'b', 'c'], ['d', 'e', 'f'], ['g', 'h', 'i'], ['j', 'k', 'l'], [
-                   'm', 'n', 'o'], ['p', 'q', 'r', 's'], ['t', 'u', 'v'], ['w', 'x', 'y', 'z'])
-
+        """
+        @tags:              回溯 dfs
+        @time complexity:   O(n4^n)
+        @space complexity:  O(n)
+        @description:       枚举所有每一位上字符串的所有可能
+        """
         n = len(digits)
-        # special case
         if n == 0:
             return []
 
         ans = []
-        cur = ''
+        path = [""] * n
 
-        def dfs(index=0):
-            nonlocal cur
-            if index == n:
-                ans.append(cur)
+        def dfs(idx):
+            # 终止遍历
+            if idx == n:
+                ans.append("".join(path))
                 return
-            m = NUM_MAP[int(digits[index])]
 
-            for i in m:
-                cur += i
-                dfs(index+1)
-                cur = cur[:-1]
+            # 遍历所有可能
+            for c in NUM_MAP[int(digits[idx])]:
+                # 会覆盖 深度遍历后无需恢复现场
+                path[idx] = c
+                dfs(idx + 1)
 
-        dfs()
-
+        dfs(0)
         return ans

@@ -1,11 +1,10 @@
 """
-@title:      515. 在每个树行中找最大值
+@title:      513. 找树左下角的值
 @difficulty: 中等
 @importance: 1/5
 @tags:       bfs
 """
-from typing import List, Optional
-from math import inf
+from typing import Optional
 
 
 class TreeNode:
@@ -16,7 +15,7 @@ class TreeNode:
 
 
 class Solution:
-    def largestValues(self, root: Optional[TreeNode]) -> List[int]:
+    def findBottomLeftValue(self, root: Optional[TreeNode]) -> int:
         """
         @tags:              bfs
         @time complexity:   O(n)
@@ -24,19 +23,19 @@ class Solution:
         @description:       bfs 同 leetcode 117 无需二外空间存储层级
         """
         queue = [root]
-        res = []
-        if root is None:
-            return res
 
         while queue:
-            maxVal = -inf
+            leftNode = None
+
             n = len(queue)
             for _ in range(n):
                 cur = queue.pop(0)
-                maxVal = max(cur.val, maxVal)
+                if leftNode is None:
+                    leftNode = cur
                 if cur.left:
                     queue.append(cur.left)
                 if cur.right:
                     queue.append(cur.right)
-            res.append(maxVal)
-        return res
+
+            if not queue:
+                return leftNode.val

@@ -1,72 +1,69 @@
 """
-87. 扰乱字符串
+@title:      87. 扰乱字符串
+@difficulty: 中等
+@importance: 5/5
+@tags:       记忆化搜索 dp
 """
+from collections import Counter
+from functools import cache
 
 
 class Solution:
+    @cache
     def isScramble(self, s1: str, s2: str) -> bool:
         """
-        dp
-        将s1至s2的转换变为规模更小的子问题
+        @tags:              记忆化搜索
+        @time complexity:   O(n^4)   
+        @space complexity:  O(n^3)
+        @description:       将问题切割为子问题即可。本题的记忆化搜索解更简单，且方便理解
         """
+        n, m = len(s1), len(s2)
+
+        # 边界条件
+        if n != m:
+            return False
+        if Counter(s1) != Counter(s2):
+            return False
+        if s1 == s2:
+            return True
+
+        # 切割 重新判断
+        for i in range(1, n):
+            if self.isScramble(s1[:i], s2[:i]) and self.isScramble(s1[i:], s2[i:]):
+                return True
+            if self.isScramble(s1[:i], s2[-i:]) and self.isScramble(s1[i:], s2[:-i]):
+                return True
+
+        return False
+
+    def isScramble(self, s1: str, s2: str) -> bool:
+        """
+        @tags:              区间dp
+        @time complexity:   O(n^3)   
+        @space complexity:  O(n^3)
+        @description:       将上述问题转化为dp
+        """
+
         n = len(s1)
-        dp = [[[False for _ in range(n + 1)] for _ in range(n + 1)]
-              for _ in range(n + 1)]
+        if n != len(s2):
+            return False
 
-        for k in range(1, n + 1):
-            for i in range(n - k + 1):
-                for j in range(n - k + 1):
-                    if k == 1:
-                        # 长度为1的时候直接判断
-                        dp[i][j][k] = s1[i] == s2[j]
-                    else:
-                        # w 为旋转点
-                        for w in range(1, k):
-                            # s1 | s2 ——> s1 | s2 旋转点同侧的字符串，是否为scramble
-                            case1 = dp[i][j][w] and dp[i+w][j+w][k - w]
-                            # s1 | s2 ——> s2 | s1 旋转点对角侧的字符串，是否为scramble
-                            case2 = dp[i][j + k - w][w] and dp[i+w][j][k - w]
-                            if case1 or case2:
-                                dp[i][j][k] = True
-        return dp[0][0][n]
+        dp = [[[False] * (n + 1) for _ in range(n)] for _ in range(n)]
 
-    def _isSame(self, s1: str, s2: str) -> bool:
-        map = {}
-        for i in s1:
-            if i in map:
-                map[i] += 1
-            else:
-                map[i] = 1
+        for i in range(n):
+            for j in range(n):
+                dp[i][j][1] = (s1[i] == s2[j])
 
-        for i in s2:
-            if i in map:
-                map[i] -= 1
-            else:
-                return False
-
-        return all(i == 0 for i in map.values())
-
-    # def isScramble(self, s1: str, s2: str) -> bool:
-    #     """
-    #     dfs 递归
-    #     时间复杂度会炸掉
-    #     """
-    #     s1_len = len(s1)
-    #     s2_len = len(s2)
-
-    #     if s1 == s2:
-    #         return True
-
-    #     if s1_len != s2_len:
-    #         return False
-
-    #     if self._isSame(s1, s2):
-    #         for i in range(1, s1_len):
-    #             if (self.isScramble(s1[0:i], s2[s1_len-i:s1_len]) and self.isScramble(s1[i:s1_len], s2[0: s1_len-i])) \
-    #                     or (self.isScramble(s1[0:i], s2[0:i]) and self.isScramble(s1[i: s1_len], s2[i: s1_len])):
-    #                 return True
-
-    #     return False
-
-
-Solution().isScramble('great', 'rgeat')
+        # 枚举长度
+        for length in range(2, n + 1):
+            # 枚举s1起点
+            for i in range(n - length + 1):
+                # 枚举s2起点
+                for j in range(n - length + 1):
+                    # 枚举切割点
+                    for k in range(1, length):
+                        if (dp[i][j][k] and dp[i+k][j+k][length-k]):
+                            return True
+                        if (dp[i][j + length - k][k] and dp[i + k][j][length - k]):
+                            return True
+        return False

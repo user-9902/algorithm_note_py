@@ -1,6 +1,8 @@
 """
-54. 螺旋矩阵
-设计
+@title:      54. 螺旋矩阵
+@difficulty: 中等
+@importance: 4/5
+@tags:       模拟 
 """
 
 from typing import List
@@ -9,39 +11,36 @@ from typing import List
 class Solution:
     def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
         """
-        打圈儿
+        @tags:              模拟
+        @time complexity:   O(n)
+        @space complexity:  O(1)
+        @description:       打圈，然后处理剩余无法打圈的
         """
-        top = 0
-        n = len(matrix)
-        m = len(matrix[0])
-
+        n, m = len(matrix), len(matrix[0])
         ans = []
-        while min(m-top, n-top) // 2 > 0:
-            for i in range(top, m-1):
-                ans.append(matrix[top][i])
+        r = 0
+        # 能完整打圈的次数
+        for i in range(min(n // 2, m // 2)):
+            r += 1
+            for x in range(m - i * 2 - 1):
+                ans.append(matrix[i][x + i])
 
-            for i in range(top, n-1):
-                ans.append(matrix[i][m-1])
+            for x in range(n - i * 2 - 1):
+                ans.append(matrix[i+x][m - 1 - i])
 
-            for i in range(m-1, top, -1):
-                ans.append(matrix[n-1][i])
+            for x in range(m - i * 2 - 1):
+                ans.append(matrix[n - 1 - i][m - i - 1 - x])
 
-            for i in range(n-1, top, -1):
-                ans.append(matrix[i][top])
+            for x in range(n - i * 2 - 1):
+                ans.append(matrix[n - 1 - i - x][i])
 
-            top += 1
-            m -= 1
-            n -= 1
-
-        if n - top == 1:
-            for i in range(top, m):
-                ans.append(matrix[(n+top) // 2][i])
-        elif m - top == 1:
-            for i in range(top, n):
-                ans.append(matrix[i][(m+top) // 2])
-
+        # 处理剩余的
+        # 行高 且存在剩余 竖着打印剩余的
+        if n >= m and m % 2:
+            for j in range(r, n-r):
+                ans.append(matrix[j][r])
+        # 横着的剩余
+        if m > n and n % 2:
+            for j in range(r, m-r):
+                ans.append(matrix[r][j])
         return ans
-
-
-Solution().spiralOrder(
-    [[1, 2, 3, 4, 5], [6, 7, 8, 9, 10], [11, 12, 13, 14, 15], [16, 17, 18, 19, 20], [21, 22, 23, 24, 25]])

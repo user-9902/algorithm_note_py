@@ -1,39 +1,63 @@
 """
-84. 柱状图中最大的矩形
-遍历每个元素
-找寻其左侧第一个比当前小的值及右侧第一个比当前小的值
-暴力枚举 or 单调栈
-
-参考自 https://www.bilibili.com/video/BV1dY4y1q7tL/?spm_id_from=333.788&vd_source=51614d2a49bfb1ec0bdf64b53b2dacd5
+@title:      84. 柱状图中最大的矩形
+@difficulty: 困难
+@importance: 5/5
+@tags:       单调栈
 """
-
 from typing import List
 
 
 class Solution:
     def largestRectangleArea(self, heights: List[int]) -> int:
-        stack = [0]
-        res = 0
+        """
+        @tags:              fs
+        @time complexity:   O(n^2)
+        @space complexity:  O(1)
+        @description:       枚举每个高度height 作为矩形的高，向左向右寻找其最大宽度。❌ 超时
+        """
+        n = len(heights)
+        ans = 0
+        for i, v in enumerate(heights):
+            l = r = i
+            while l > -1 and heights[l] >= v:
+                l -= 1
+            while r < n and heights[r] >= v:
+                r += 1
+            ans = max(ans, (r - l - 1) * v)
+        return ans
 
-        for i in range(1, len(heights)):
+    def largestRectangleArea(self, heights: List[int]) -> int:
+        """
+        @tags:              单调栈
+        @time complexity:   O(n)
+        @space complexity:  O(n)
+        @description:       fs的瓶颈在寻找宽度上，我们使用单调栈来快速找到宽度。本题和接雨水相似。
+        """
+        n = len(heights)
+        left = [-1] * n
+        right = [n] * n
+        stack = []
+        # 单调栈来寻找左边界
+        for i, v in enumerate(heights):
+            while stack and v <= heights[stack[-1]]:
+                stack.pop()
+            if stack:
+                left[i] = stack[-1]
+            stack.append(i)
+
+        stack.clear()
+        # 单调栈来寻找右边界
+        for i in range(n-1, -1, -1):
             v = heights[i]
-            # 插入的元素使得stack失去单调性
-            if heights[stack[-1]] > v:
-                # 恢复单调性
-                while stack and heights[stack[-1]] > v:
-                    h = stack.pop()  # 高度的下标
-                    r = i   # 右边界
-                    l = stack[-1] if stack else -1  # 左边界
-                    res = max(res, (r - l -1) * heights[h])
-                stack.append(i)
-            else:
-                stack.append(i)
+            while stack and v <= heights[stack[-1]]:
+                stack.pop()
+            if stack:
+                right[i] = stack[-1]
+            stack.append(i)
 
-        # 清空栈
-        while stack:
-            h = stack.pop()
-            r = len(heights)
-            l = stack[-1] if stack else -1
-            res = max(res, (r - l -1) * heights[h])
-
-        return res
+        ans = 0
+        for i in range(n):
+            w = right[i] - left[i] - 1
+            h = heights[i]
+            ans = max(ans, w * h)
+        return ans

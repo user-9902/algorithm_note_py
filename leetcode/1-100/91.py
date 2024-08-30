@@ -12,6 +12,7 @@ class Solution:
         @tags:              dp
         @time complexity:   O(n)
         @space complexity:  O(n) 能压缩空间复杂度至一维
+        @description:       模板dp题，将问题简化为:以当前字符串结尾能解码的方式。
         """
         n = len(s)
         f = [0] * n

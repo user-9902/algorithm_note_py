@@ -1,43 +1,33 @@
 """
 @title:      63. 不同路径 II
 @difficulty: 中等
-@importance: 4/5
+@importance: 5/5
 @tags:       dp
 """
 
 from typing import List
-from math import inf
 
 
 class Solution:
     def uniquePathsWithObstacles(self, obstacleGrid: List[List[int]]) -> int:
         """
         @tags:              dp
-        @time complexity:   O(m*n)
-        @space complexity:  O(m*n)
-        @description:       同 62 障碍物是无法到达的，设为其状态值保持为0即可。障碍的处理较繁杂
+        @time complexity:   O(mn)
+        @space complexity:  O(n)
+        @description:       同 62 障碍物是无法到达的，设为其状态值保持为0即可。
         """
-        m = len(obstacleGrid)
-        n = len(obstacleGrid[0])
-        if obstacleGrid[m - 1][n - 1] == 1:
-            return 0
+        n, m = len(obstacleGrid), len(obstacleGrid[0])
 
-        f = [[0] * n for i in range(m)]
-        # 第一列是否都能到达
-        for i in range(m):
-            if i > 0 and obstacleGrid[i - 1][0] == 1:
-                break
-            f[i][0] = 1
-        # 第一行是否都能到达
+        # 💲一般化特殊情况。这里第一行第一列为特殊情况，没有上侧或左侧，我们为其补一行一列，使得特殊值不再特殊，类似一些链表题中头节点的处理。
+        f = [0] * (m + 1)
+        f[1] = 1
+
         for i in range(n):
-            if i > 0 and obstacleGrid[0][i - 1] == 1:
-                break
-            f[0][i] = 1
-
-        for i in range(1, m):
-            for j in range(1, n):
-                a = f[i][j - 1] if obstacleGrid[i][j - 1] == 0 else 0
-                b = f[i - 1][j] if obstacleGrid[i - 1][j] == 0 else 0
-                f[i][j] = a + b
-
-        return f[m - 1][n - 1]
+            for j in range(m):
+                if obstacleGrid[i][j] == 0:
+                    # 上侧路径 + 左侧路径
+                    f[j + 1] += f[j]
+                else:
+                    # 当前为障碍物 不可到达
+                    f[j + 1] = 0
+        return f[m]

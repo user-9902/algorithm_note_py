@@ -12,8 +12,8 @@ class Solution:
     def uniquePaths(self, m: int, n: int) -> int:
         """
         @tags:              dp
-        @time complexity:   O(m*n)
-        @space complexity:  O(m*n)
+        @time complexity:   O(mn)
+        @space complexity:  O(mn)
         @description:       一眼dp题，先写出迭代公式 f[i][j] = f[i][j-1] + f[i-1][j]
         """
         f = [[0]*n for i in range(m)]

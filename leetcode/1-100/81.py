@@ -1,45 +1,38 @@
 """
-81. 搜索旋转排序数组 II
-binary search
-leetcode 33 题改
+name:       81. 搜索旋转排序数组 II
+difficulty: 中等
+importance: 5/5
+tags:       二分
 """
+
 from typing import List
+from bisect import bisect_left
 
 
 class Solution:
     def search(self, nums: List[int], target: int) -> bool:
         """
-        binary search
+        @tags:              二分
+        @time complexity:   O(n)
+        @space complexity:  O(1)
+        @description:       leetcode 33 进阶
         """
-        # 154 找到最小的下标
         n = len(nums)
-        left = 0
-        right = n - 2
-        while left <= right:
-            while nums[left] == nums[-1] and left < right:
-                left += 1
-
-            mid = (left + right) // 2
-            if nums[mid] > nums[-1]:
-                left = mid + 1
-            else:
-                right = mid - 1
-
-        l = 0 if target > nums[-1] else left
-        r = left - 1 if target > nums[-1] else n - 1
-        if l == 0:
-            while nums[l] == nums[-1] and l < r:
-                l += 1
-        while l <= r:
+        l = 0
+        r = n - 1
+        # 这一步非常重要 排除了 如果左端点 和 右端点相同，则无法找到最低点。
+        while l <= r and nums[l] == nums[r]:
+            l += 1
+        # 找到最低点
+        while l < r:
             mid = (l + r) // 2
-            if nums[mid] > target:
-                r = mid - 1
-            else:
+            if nums[mid] > nums[n - 1]:
                 l = mid + 1
+            else:
+                r = mid
 
-        return nums[r] == target
-
-    
-
-
-Solution().search([2, 2, 2, 3, 2, 2, 2], 3)
+        if target > nums[n - 1]:
+            idx = bisect_left(nums, target, hi=r - 1)
+        else:
+            idx = bisect_left(nums, target, lo=r)
+        return idx <= n - 1 and target == nums[idx]
