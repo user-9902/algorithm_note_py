@@ -1,51 +1,45 @@
 """
-28. 找出字符串中第一个匹配项的下标
-KMP
+@title:      28. 找出字符串中第一个匹配项的下标
+@difficulty: 简单
+@importance: 6/5
+@tags:       KMP RK
+"""
+
+"""
 题目的规模能通过暴力求解来实现，
 题目规模稍微严格，则变为考察KMP或RK的题目了。
 """
 
 
-def get_next_val(s: str):
+def get_next(s):
     n = len(s)
-    ans = [0]
-
-    i = 1
-    length = 0
-    while i < n:
-        if s[i] == s[length]:
-            length += 1
-            ans.append(length)
-            i += 1
-            if i < n and s[i] == s[length]:
-                ans[i-1] = ans[length - 1]
-        else:
-            if length == 0:
-                ans.append(0)
-                i += 1
-            else:
-                length = ans[length - 1]
-    return ans
+    next = [0] * n
+    j = 0
+    for i in range(1, n):
+        if j > 0 and s[i] != s[j]:
+            j = next[j - 1]
+        if s[i] == s[j]:
+            j += 1
+        next[i] = j
+    return next
 
 
 class Solution:
     def strStr(self, haystack: str, needle: str) -> int:
-
-        next_v = get_next_val(needle)
-
-        n = len(haystack)
+        """
+        @tags:              KMP
+        @time complexity:   O(n)
+        @space complexity:  O(n)
+        @description:
+        """
         m = len(needle)
-        i = j = 0
-        while i < n:
-            if haystack[i] == needle[j]:
-                i += 1
+        next = get_next(needle)
+        j = 0
+        for i, v in enumerate(haystack):
+            while j > 0 and needle[j] != v:
+                j = next[j - 1]
+            if needle[j] == v:
                 j += 1
-            else:
-                if j > 0:
-                    j = next_v[j-1]
-                else:
-                    i += 1
             if j == m:
-                return i - m
-
+                return i - m + 1
         return -1

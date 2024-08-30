@@ -1,6 +1,7 @@
 """
-KMP
-字符串匹配算法，是一种高效的字符串子串查找算法
+name:           KMP
+description:    一种高效的字符串子串查找算法
+
 朴素的字符串匹配:
 朴素的字符串匹配的时间复杂度为O(nm):
     ↓...↓                ↓                    ↓...↓
@@ -63,71 +64,34 @@ next在移动j的时候会发生重复比较，父串s[i] 多次比较了 t[next
 我们将这种改进称的next称为nextval
 """
 
-from typing import List
 
-
-def kmp_next(s: str) -> List[int]:
-    n = len(s)
-    next = [0]
-
-    i = 1
-    length = 0
-    while i < n:
-        if s[i] == s[length]:
-            i += 1
-            length += 1
-            next.append(length)
-        else:
-            if length == 0:
-                i += 1
-                next.append(0)
-            else:
-                length = next[length-1]
+def kmp_next(string):
+    """
+    dp
+    """
+    n = len(string)
+    next = [0] * n
+    j = 0
+    for i in range(1, n):
+        while j > 0 and string[i] != string[j]:
+            j = next[j - 1]  # 最关键的一步 dp体现
+        if string[i] == string[j]:
+            j += 1
+        next[i] = j
     return next
 
 
-def kmp_next_val(s: str):
-    n = len(s)
-    ans = [0]
-
-    i = 1
-    length = 0
-    while i < n:
-        if s[i] == s[length]:
-            length += 1
-            ans.append(length)
-            i += 1
-            # 这里重复判断了，懒得优化了[doge]
-            if i < n and s[i] == s[length]:
-                ans[i-1] = ans[length - 1]
-        else:
-            if length == 0:
-                ans.append(0)
-                i += 1
-            else:
-                length = ans[length - 1]
-    return ans
-
-
 def get_child_str(s: str, t: str) -> int:
-    n = len(s)
     m = len(t)
-
-    next_val = kmp_next_val(t)
-    i = 0
+    next = kmp_next(t)
     j = 0
-    while i < n:
-        if s[i] == t[j]:
-            i += 1
+    for i, v in enumerate(s):
+        while j > 0 and t[j] != v:
+            j = next[j - 1]
+        if t[j] == v:
             j += 1
-        else:
-            if j > 0:
-                j = next_val[j-1]
-            else:
-                i += 1
         if j == m:
-            return i - m
-
+            return i - m + 1
     return -1
 
 
