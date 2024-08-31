@@ -1,7 +1,7 @@
 """
 @title:      并查集
-@difficulty: 困难
-@importance: 4/5
+@difficulty: 中等
+@importance: 6/5
 @tags:       并查集
 """
 
@@ -17,7 +17,6 @@ class UnionFind:
         self.stack = [0] * size  # 用于优化合并操作
 
     def find(self, x):
-        # 查找元素 x 所属的集合的根节点
         if self.heads[x] != x:
             # 路径压缩
             self.heads[x] = self.find(self.heads[x])
@@ -27,6 +26,7 @@ class UnionFind:
         # 合并元素 x 和 y 所属的集合
         rootX = self.find(x)
         rootY = self.find(y)
+        # 将数量少的节点指向数量多的，以减少后序查找的时间复杂度
         if rootX != rootY:
             if self.stack[rootX] > self.stack[rootY]:
                 self.heads[rootY] = rootX
