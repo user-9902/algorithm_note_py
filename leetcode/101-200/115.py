@@ -35,7 +35,7 @@ class Solution:
         """
         @tags:              dp
         @time complexity:   O(mn)
-        @space complexity:  O(mn)   观察状态方程 复杂度可压缩至一维
+        @space complexity:  O(mn)   f[i][j]依赖上、左上的状态,可压缩至一维
         """
         MOD = 10**9 + 7
         n, m = len(s), len(t)
@@ -47,11 +47,10 @@ class Solution:
         for i in range(1, n + 1):
             f[i][0] = 1
             for j in range(1, m + 1):
-                # t 的增加不影响结果
+                # s 的增加不影响结果
                 f[i][j] = f[i - 1][j]
                 # 最后字符串相同的时候
                 if s[i - 1] == t[j - 1]:
                     f[i][j] += f[i - 1][j - 1]
                 f[i][j] %= MOD
-
         return f[n][m]

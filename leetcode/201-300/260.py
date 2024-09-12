@@ -1,9 +1,11 @@
 """
-260. 只出现一次的数字 III
-位运算，集合
-
-参考：https://leetcode.cn/problems/single-number-iii/solutions/2484352/tu-jie-yi-zhang-tu-miao-dong-zhuan-huan-np9d2/?envType=daily-question&envId=2023-10-16
+@title:      260. 只出现一次的数字 III
+@difficulty: 中等
+@importance: 5/5
+@tags:       hashmap 异或和
 """
+
+
 from typing import List
 from operator import xor
 from functools import reduce
@@ -12,14 +14,28 @@ from functools import reduce
 class Solution:
     def singleNumber(self, nums: List[int]) -> List[int]:
         """
-        异或
-        两个数是不同的，两个目标数的异或结果中，值为1的比特位，即可区分这两个数。 
-            如 0101 ^ 1111 = 1010 那么 0010或1000 即使区分这两个数
-        获取一个比特位，进行分组再次异或
+        @tags:              hashmap
+        @time complexity:   O(n)
+        @space complexity:  O(n)
+        @description:       统计元素出现次数
+        """
+        pass
+
+    def singleNumber(self, nums: List[int]) -> List[int]:
+        """
+        @tags:              异或和
+        @time complexity:   O(n)
+        @space complexity:  O(1)
+        @description:       前置题 leetcode 136
+                            设结果为 a 和 b 我们对nums中的所有元素做异或和结果为 a^b
+                            为了将 a 和 b 区分开来，我们需要找到二进制 a 和 b 中不同的那一位
+                            💲由于补码的性质 x & -x == x 中最小的一位 1。（如 10101 & 01011 == 00001
+                            我们就用这一位数来区分 a 和 b 
         """
         xor_all = reduce(xor, nums)
         bit = xor_all & -xor_all
 
+        # 确保了 a 和 b 在不同的两组中后 将 nums 分为两组，两组内的数分别求异或和
         ans = [0, 0]
         for n in nums:
             ans[(n & bit) == 0] ^= n
