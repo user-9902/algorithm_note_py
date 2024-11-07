@@ -39,7 +39,7 @@ class Solution:
                 while t:
                     # 除去当前选的 子问题
                     v = f[j ^ t]
-                    if sums[t] > v:  # 💲不用 min max 减少函数栈的开销
+                    if sums[t] > v:  # 💲减少 min max 等内置函数的使用，减少函数栈的开销，可以优化复杂度
                         v = sums[t]
                     if v < f[j]:
                         f[j] = v

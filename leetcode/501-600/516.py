@@ -39,7 +39,7 @@ class Solution:
 
         return dfs(0, n - 1)
 
-    def longestPalindromeSubseq2(self, s: str) -> int:
+    def longestPalindromeSubseq(self, s: str) -> int:
         """
         @tags:              dp
         @time complexity:   O(n*m)   
@@ -61,3 +61,26 @@ class Solution:
                 )
 
         return f[0][n - 1]
+
+    def longestPalindromeSubseq(self, s: str) -> int:
+        """
+        @tags:              dp
+        @time complexity:   O(n^2)   
+        @space complexity:  O(n) 
+        @description:       上一解的空间压缩版本
+        """
+        n = len(s)
+
+        f = [0] * n
+
+        for i in range(n - 1, -1, -1):
+            f[i] = 1
+            pre = 0
+            for j in range(i + 1, n):
+                tmp = f[j]
+                if s[i] == s[j]:
+                    f[j] = pre + 2
+                else:
+                    f[j] = max(f[j - 1], f[j])
+                pre = tmp
+        return f[n - 1]
