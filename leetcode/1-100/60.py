@@ -39,7 +39,7 @@ class Solution:
     def getPermutation(self, n: int, k: int) -> str:
         """
         @tags:              bfs
-        @time complexity:   O(n)
+        @time complexity:   O(logn)
         @space complexity:  O(1)
         @description:       观察bfs树，我们发现每个节点的子节点个数是确定的，这样就能利用bfs直接找到答案了
         """
