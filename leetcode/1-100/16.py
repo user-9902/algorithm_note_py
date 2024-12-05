@@ -1,8 +1,8 @@
 """
-16. 最接近的三数之和
-difficulty: 中等
-importance: 4/5
-tags:       双指针
+@title:      16. 最接近的三数之和
+@difficulty: 中等
+@importance: 4/5
+@tags:       双指针
 """
 from typing import List
 from math import inf

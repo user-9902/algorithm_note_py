@@ -1,8 +1,8 @@
 """
-15. 三数之和
-difficulty: 中等
-importance: 5/5
-tags:       双指针
+@title:      15. 三数之和
+@difficulty: 中等
+@importance: 5/5
+@tags:       双指针
 """
 from typing import List
 
